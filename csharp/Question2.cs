@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 class Helper2
 {
@@ -8,24 +9,14 @@ class Helper2
         string input = Console.ReadLine();
         string[] numbers = input.Split(',');
 
-        int maximum_number = int.MinValue;
-
-        foreach (string num in numbers)
+        try
         {
-            if (int.TryParse(num.Trim(), out int current_number))
-            {
-                if (current_number > maximum_number)
-                {
-                    maximum_number = current_number;
-                }
-            }
-            else
-            {
-                Console.WriteLine("Invalid input :( ");
-                return;
-            }
+            int maximum_number = numbers.Select(num => int.Parse(num.Trim())).Max();
+            Console.WriteLine("The maximum number is: " + maximum_number);
         }
-
-        Console.WriteLine("The maximum number is: " + maximum_number);
+        catch
+        {
+            Console.WriteLine("Invalid input :( ");
+        }
     }
 }
