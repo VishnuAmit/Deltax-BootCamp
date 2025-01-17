@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-
 class Helper2
 {
     public static void Question2()
@@ -11,8 +9,14 @@ class Helper2
 
         try
         {
-            int maximum_number = numbers.Select(num => int.Parse(num.Trim())).Max();
-            Console.WriteLine("The maximum number is: " + maximum_number);
+            int max = int.MinValue;
+            foreach (string num in numbers)
+            {
+                int parse_number = int.Parse(num.Trim());
+                max = Math.Max(max, parse_number); 
+            }
+
+            Console.WriteLine("The maximum number is: " + max);
         }
         catch
         {

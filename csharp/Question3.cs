@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 class Helper3
 {
@@ -9,17 +8,26 @@ class Helper3
         {
             Console.WriteLine("Enter at least 5 comma-separated numbers: ");
             string input = Console.ReadLine();
-            int[] numbers = input.Split(',').Select(int.Parse).ToArray();
+            string[] inputarr = input.Split(',');
 
-            if (numbers.Length < 5)
+            if (inputarr.Length < 5)
             {
                 Console.WriteLine("Invalid List :( ");
                 continue;
             }
 
-            var smallest = numbers.OrderBy(n => n).Take(3);
-            Console.WriteLine("The 3 smallest numbers are: " + string.Join(", ", smallest));
-            break;
+            try
+            {
+                int[] numbers = Array.ConvertAll(inputarr, s => int.Parse(s.Trim()));
+                Array.Sort(numbers);
+
+                Console.WriteLine("The 3 smallest numbers are: " + numbers[0] + ", " + numbers[1] + ", " + numbers[2]);
+                break;
+            }
+            catch 
+            {
+                Console.WriteLine("Invalid input :( ");
+            }
         }
     }
 }

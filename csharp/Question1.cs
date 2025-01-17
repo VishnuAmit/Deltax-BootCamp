@@ -1,5 +1,4 @@
 ﻿using System;
-
 class Helper
 {
     public static void Question1()

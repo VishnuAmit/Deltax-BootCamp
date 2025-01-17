@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-
 class Helper4
 {
     public static void Question4()

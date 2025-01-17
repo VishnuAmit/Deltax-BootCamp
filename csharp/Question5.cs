@@ -22,12 +22,12 @@ class Helper5
                 days += DateTime.DaysInMonth(today.Year, today.Month == 1 ? 12 : today.Month - 1);
             }
 
-            if (months < 0)
+           if (months < 0)
             {
                 years--;
                 months += 12;
             }
-
+ 
             Console.WriteLine($"You are {years} years, {months} months, and {days} days old.");
         }
         else
