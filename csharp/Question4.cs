@@ -18,9 +18,9 @@ class Helper4
                 Console.Write(number + " ");
             }
         }
-        catch
+        catch(FormatException)
         {
-            Console.WriteLine("Invalid input :( ");
+            Console.WriteLine("Invalid input. Ensure only numbers are entered sepearated by commas");
         }
     }
 }
