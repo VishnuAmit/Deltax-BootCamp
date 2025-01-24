@@ -2,10 +2,10 @@
 {
     public interface ICalculator
     {
-        double add(int a, int b);
-        double add(int a, int b, int c);
-        double add(double a, double b);
-        double getresult();
+        double Add(int a, int b);
+        double Add(int a, int b, int c);
+        double Add(double a, double b);
+        double GetResult();
     }
 }
 

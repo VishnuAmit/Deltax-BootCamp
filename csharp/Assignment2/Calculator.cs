@@ -4,29 +4,35 @@ namespace CalculatorApp
 {
     public class Calculator : ICalculator
     {
-        protected double _result;
-        public virtual double add(int a, int b)
+    
+        private double _result;
+        protected double Result
         {
-            _result = a + b;
-            return _result;
+            get => _result; 
+            set => _result = value; 
         }
 
-        public virtual double add(int a, int b, int c)
+        public virtual double Add(int firstNumber, int secondNumber)
         {
-            _result = a + b + c;
-            return _result;
+            Result = firstNumber + secondNumber;
+            return Result;
         }
 
-        public virtual double add(double a, double b)
+        public virtual double Add(int firstNumber, int secondNumber, int thirdNumber)
         {
-            _result = a + b;
-            return _result;
+            Result= firstNumber + secondNumber + thirdNumber;
+            return Result;
         }
 
-        public virtual double getresult()
+        public virtual double Add(double firstNumber, double secondNumber)
         {
-            return _result;
+            Result = firstNumber + secondNumber;
+            return Result;
+        }
+
+        public virtual double GetResult()
+        {
+            return Result;
         }
     }
 }
-

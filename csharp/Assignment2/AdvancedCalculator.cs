@@ -4,15 +4,15 @@ namespace CalculatorApp
 {
     public class AdvancedCalculator : Calculator
     {
-        public double power(int baseNum, int exponent)
+        public double Power(int baseNumber, int exponent)
         {
-            _result = Math.Pow(baseNum, exponent);
-            return _result;
+            Result = Math.Pow(baseNumber, exponent);
+            return Result;
         }
 
-        public override double getresult()
+        public override double GetResult()
         {
-            return _result * 1_000_000;
+            return Result * 1_000_000;
         }
     }
 }
