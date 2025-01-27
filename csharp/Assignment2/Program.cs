@@ -12,7 +12,7 @@ namespace CalculatorApp
             Console.WriteLine($"Add two integers: {calculator.Add(10, 20)}");
             Console.WriteLine($"Add three integers: {calculator.Add(5, 10, 15)}");
             Console.WriteLine($"Add two floating point numbers: {calculator.Add(2.5, 3.5)}");
-            Console.WriteLine($"Latest result: {calculator.Result}");
+            Console.WriteLine($"Latest result: {calculator.GetResult()}");
 
             // using advanced calculator
             AdvancedCalculator advCalculator = new AdvancedCalculator();
@@ -21,7 +21,7 @@ namespace CalculatorApp
             Console.WriteLine($"Add two integers: {advCalculator.Add(8, 12)}");
             Console.WriteLine($"Add three integers: {advCalculator.Add(7, 14, 21)}");
             Console.WriteLine($"Add two floating-point numbers: {advCalculator.Add(1.1, 2.2)}");
-            Console.WriteLine($"Latest result in micros: {advCalculator.Result * 1_000_000}");
+            Console.WriteLine($"Latest result in micros: {advCalculator.GetResult()}");
 
         }
     }
