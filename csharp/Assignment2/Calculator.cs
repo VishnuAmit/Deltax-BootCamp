@@ -6,7 +6,7 @@ namespace CalculatorApp
     {
     
         private double _result;
-        protected double Result
+        public double Result
         {
             get => _result; 
             set => _result = value; 
@@ -30,9 +30,5 @@ namespace CalculatorApp
             return Result;
         }
 
-        public virtual double GetResult()
-        {
-            return Result;
-        }
     }
 }

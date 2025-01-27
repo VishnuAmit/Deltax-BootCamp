@@ -9,10 +9,5 @@ namespace CalculatorApp
             Result = Math.Pow(baseNumber, exponent);
             return Result;
         }
-
-        public override double GetResult()
-        {
-            return Result * 1_000_000;
-        }
     }
 }
