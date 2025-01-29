@@ -20,5 +20,10 @@ namespace IMDBApp.Repositories
         };
 
         public List<Producer> GetAllProducers() => _producers;
+
+        public void AddProducer(Producer producer)
+        {
+            _producers.Add(producer);
+        }
     }
 }

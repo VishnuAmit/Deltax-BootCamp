@@ -5,5 +5,6 @@ namespace IMDBApp.Domain.Interfaces
     public interface IActorRepository
     {
         List<Actor> GetAllActors();
+        void AddActor(Actor actor); 
     }
 }

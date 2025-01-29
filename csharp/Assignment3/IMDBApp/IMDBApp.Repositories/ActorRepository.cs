@@ -20,5 +20,10 @@ namespace IMDBApp.Repositories
         };
 
         public List<Actor> GetAllActors() => _actors;
+
+        public void AddActor(Actor actor)
+        {
+            _actors.Add(actor);
+        }
     }
 }

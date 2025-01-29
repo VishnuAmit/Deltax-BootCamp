@@ -5,7 +5,25 @@ namespace IMDBApp.Repositories
 {
     public class MovieRepository : IMovieRepository
     {
-        private List<Movie> _movies = new();
+        private List<Movie> _movies = new()
+        {
+            new Movie
+            {
+                Name = "Titanic",
+                YearOfRelease = 1997,
+                Plot = "Epic romance on a ill-fated R.M.S. Titanic.",
+                Actors = new List<Actor> { new Actor { Name = "Leonardo DiCaprio" }, new Actor { Name = "Kate Winslet" } },
+                Producer = new Producer { Name = "James Cameron" }
+            },
+       new Movie
+{
+    Name = "Triangle",
+    YearOfRelease = 2009,
+    Plot = "A woman becomes trapped in a time loop.",
+    Actors = new List<Actor> { new Actor { Name = "Melissa George" } },
+    Producer = new Producer { Name = "Christopher Smith" }
+}
+        };
 
         public List<Movie> GetAllMovies() => _movies;
 
@@ -16,5 +34,19 @@ namespace IMDBApp.Repositories
 
             _movies.Add(movie);
         }
+
+
+
+        public void DeleteMovie(string movieName)
+        {
+            var movie = _movies.FirstOrDefault(m => m.Name.Equals(movieName, StringComparison.OrdinalIgnoreCase));
+            if (movie != null)
+            {
+                _movies.Remove(movie);
+            }
+        }
+
     }
 }
+
+

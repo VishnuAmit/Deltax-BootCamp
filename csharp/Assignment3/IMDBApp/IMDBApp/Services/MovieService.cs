@@ -46,24 +46,23 @@ namespace IMDBApp.Services
 
         public void AddMovie()
         {
-            // Movie Name Validation
+
             Console.Write("Enter Movie Name: ");
             var name = Console.ReadLine();
             if (string.IsNullOrEmpty(name))
                 throw new ValidationException("Movie name cannot be empty.");
 
-            // Year of Release Validation
+ 
             Console.Write("Enter Year of Release: ");
             if (!int.TryParse(Console.ReadLine(), out var year) || year < 1896 || year > DateTime.Now.Year)
                 throw new ValidationException("Invalid year entered. The movie year must be between 1896 and the current year.");
 
-            // Plot Validation
+         
             Console.Write("Enter Plot: ");
             var plot = Console.ReadLine();
             if (string.IsNullOrEmpty(plot))
                 throw new ValidationException("Plot cannot be empty.");
 
-            // Actors Selection
             var actors = _actorRepo.GetAllActors();
             if (actors.Count == 0)
                 throw new ValidationException("No actors available. Please add actors first.");
