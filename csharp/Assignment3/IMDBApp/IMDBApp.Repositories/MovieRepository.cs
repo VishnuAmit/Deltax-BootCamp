@@ -5,7 +5,12 @@ namespace IMDBApp.Repositories
 {
     public class MovieRepository : IMovieRepository
     {
-        private List<Movie> _movies = new();
+        private readonly List<Movie> _movies;
+
+        public MovieRepository()
+        {
+            _movies = new List<Movie>();
+        }
 
         public List<Movie> GetAllMovies() => _movies;
 
