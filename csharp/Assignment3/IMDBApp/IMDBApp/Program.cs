@@ -2,6 +2,7 @@
 using IMDBApp.Repositories;
 using IMDBApp.Services;
 using IMDBApp.Domain.Models;
+using IMDBApp.Domain.Exceptions;
 
 class Program
 {
@@ -56,7 +57,72 @@ class Program
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.WriteLine("********* ADD A NEW MOVIE *********");
                     Console.ResetColor();
-                    movieService.AddMovie();
+                    try
+                    {
+                        Console.Write("Enter Movie Name: ");
+                        string name = Console.ReadLine() ?? string.Empty;
+                        Console.Write("Enter Year of Release: ");
+                        string yearInput = Console.ReadLine() ?? string.Empty;
+                        if (!int.TryParse(yearInput, out int year))
+                        {
+                            throw new ValidationException("Invalid year format.");
+                        }
+                        Console.Write("Enter Plot: ");
+                        string plot = Console.ReadLine() ?? string.Empty;
+                        var actors = actorRepo.GetAllActors();
+                        if (!actors.Any())
+                        {
+                            throw new ValidationException("No actors available. Please add actors first.");
+                        }
+                        Console.WriteLine("\nAvailable Actors:");
+                        for (int i = 0; i < actors.Count; i++)
+                        {
+                            Console.WriteLine($"{i + 1}. {actors[i].Name}");
+                        }
+                        Console.WriteLine("\nSelect Actors (comma-separated indices):");
+                        string actorInput = Console.ReadLine() ?? string.Empty;
+                        var selectedActorIndices = actorInput.Split(',')
+                            .Select(x => int.TryParse(x.Trim(), out int index) ? index : 0)
+                            .Where(x => x > 0 && x <= actors.Count)
+                            .ToList();
+
+                        var producers = producerRepo.GetAllProducers();
+                        if (!producers.Any())
+                        {
+                            throw new ValidationException("No producers available. Please add producers first.");
+                        }
+                        Console.WriteLine("\nAvailable Producers:");
+                        for (int i = 0; i < producers.Count; i++)
+                        {
+                            Console.WriteLine($"{i + 1}. {producers[i].Name}");
+                        }
+                        Console.WriteLine("\nSelect Producer (index):");
+                        string producerInput = Console.ReadLine() ?? string.Empty;
+                        if (!int.TryParse(producerInput, out int producerIndex))
+                        {
+                            throw new ValidationException("Invalid producer selection.");
+                        }
+                        movieService.AddMovie(
+                            name,
+                            year,
+                            plot,
+                            selectedActorIndices,
+                            producerIndex
+                        );
+                        Console.WriteLine("\nMovie added successfully!");
+                    }
+                    catch (ValidationException ex)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"\nError: {ex.Message}");
+                        Console.ResetColor();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"\nAn unexpected error occurred: {ex.Message}");
+                        Console.ResetColor();
+                    }
                     PauseAndReturnToMenu();
                     break;
 
@@ -65,17 +131,63 @@ class Program
                     break;
 
                 case "4":
-                    AddActor(actorRepo);
-                    PauseAndReturnToMenu();
+                    Console.WriteLine("********* LIST OF ACTORS *********");
+
+                    var actorList = movieService.GetAllActors(); 
+
+                    if (actorList.Any())
+                    {
+                        for (int i = 0; i < actorList.Count; i++)
+                        {
+                            Console.WriteLine($"{i + 1}. {actorList[i].Name}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No actors found.");
+                    }
                     break;
 
                 case "5":
-                    AddProducer(producerRepo);
+                    Console.WriteLine("Enter the name of the producer to add:");
+                    var producerName = Console.ReadLine();
+
+                    if (string.IsNullOrEmpty(producerName))
+                    {
+                        Console.WriteLine("Producer name cannot be empty.");
+                        return;
+                    }
+
+                    movieService.AddProducer(producerName);
                     PauseAndReturnToMenu();
                     break;
 
                 case "6":
-                    DeleteMovie(movieRepo);
+                    Console.WriteLine("Select a movie to delete:");
+                    var movies = movieRepo.GetAllMovies();
+
+                    if (!movies.Any())
+                    {
+                        Console.WriteLine("No movies available in the repository.");
+                        return;
+                    }
+
+                    for (int i = 0; i < movies.Count; i++)
+                    {
+                        Console.WriteLine($"{i + 1}. {movies[i].Name}");
+                    }
+
+                    var movieIndex = int.Parse(Console.ReadLine()) - 1;
+                    if (movieIndex < 0 || movieIndex >= movies.Count)
+                    {
+                        Console.WriteLine("Invalid selection.");
+                        return;
+                    }
+
+                    var movieName = movies[movieIndex].Name;
+
+                    movieService.DeleteMovie(movieName);
+
                     PauseAndReturnToMenu();
                     break;
 
@@ -143,96 +255,6 @@ class Program
         }
 
         PauseAndReturnToMenu();
-    }
-
-    static void AddActor(IActorRepository actorRepo)
-    {
- 
-        Console.WriteLine("********* LIST OF ACTORS *********");
-        var actors = actorRepo.GetAllActors();
-        if (actors.Count == 0)
-        {
-            Console.WriteLine("No actors found.");
-        }
-        else
-        {
-            for (int i = 0; i < actors.Count; i++)
-            {
-                Console.WriteLine($"{i + 1}. {actors[i].Name}");
-            }
-        }
-        Console.Write("Enter Actor Name: ");
-        var name = Console.ReadLine();
-
-        var existingActor = actors.FirstOrDefault(a => a.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-
-        if (existingActor != null)
-        {
-            Console.WriteLine("This actor already exists in the list.");
-        }
-        else
-        {
-            Console.Write("Enter Actor Date of Birth (yyyy-MM-dd) : ");
-            var dob = Console.ReadLine();
-
-            var actor = new Actor { Name = name };
-            actorRepo.AddActor(actor);
-            Console.WriteLine("Actor added successfully.");
-        }
-    }
-
-
-    static void AddProducer(IProducerRepository producerRepo)
-    {
-        Console.WriteLine("********* LIST OF PRODUCERS *********");
-        var producers = producerRepo.GetAllProducers();
-        if (producers.Count == 0)
-        {
-            Console.WriteLine("No producers found.");
-        }
-        else
-        {
-            for (int i = 0; i < producers.Count; i++)
-            {
-                Console.WriteLine($"{i + 1}. {producers[i].Name}");
-            }
-        }
-
-        Console.Write("Enter Producer Name: ");
-        var name = Console.ReadLine();
-
-        var existingProducer = producers.FirstOrDefault(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-
-        if (existingProducer != null)
-        {
-            Console.WriteLine("This producer already exists in the list.");
-        }
-        else
-        {
-            Console.Write("Enter Producer Date of Birth (yyyy-MM-dd) : ");
-            var dob = Console.ReadLine();
-
-            var producer = new Producer { Name = name };
-            producerRepo.AddProducer(producer);
-            Console.WriteLine("Producer added successfully.");
-        }
-    }
-
-
-    static void DeleteMovie(IMovieRepository movieRepo)
-    {
-        Console.WriteLine("Select a movie to delete:");
-        var movies = movieRepo.GetAllMovies();
-        for (int i = 0; i < movies.Count; i++)
-        {
-            Console.WriteLine($"{i + 1}. {movies[i].Name}");
-        }
-
-        var movieIndex = int.Parse(Console.ReadLine()) - 1;
-        var movieName = movies[movieIndex].Name;
-        movieRepo.DeleteMovie(movieName);
-
-        Console.WriteLine($"Movie '{movieName}' deleted successfully.");
     }
 
     static void PauseAndReturnToMenu()

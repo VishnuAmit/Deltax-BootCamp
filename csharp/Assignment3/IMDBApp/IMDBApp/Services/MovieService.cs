@@ -52,63 +52,85 @@ namespace IMDBApp.Services
             }
         }
 
-        public void AddMovie()
+        public void AddMovie(string name, int year, string plot, List<int> actorIndices, int producerIndex)
+        {
+            if (string.IsNullOrEmpty(name))
+                throw new ValidationException("Movie name cannot be empty.");
+            if (year < 1896 || year > DateTime.Now.Year)
+                throw new ValidationException("Invalid year entered. The movie year must be between 1896 and the current year.");
+            if (string.IsNullOrEmpty(plot))
+                throw new ValidationException("Plot cannot be empty.");
+            var actors = _actorRepo.GetAllActors();
+            if (!actorIndices.Any() || actorIndices.Any(index => index < 1 || index > actors.Count))
+                throw new ValidationException("Invalid actor selection.");
+            var producers = _producerRepo.GetAllProducers();
+            if (producerIndex < 1 || producerIndex > producers.Count)
+                throw new ValidationException("Invalid producer selection.");
+            var selectedActors = actorIndices.Select(index => actors[index - 1]).ToList();
+            var selectedProducer = producers[producerIndex - 1];
+            var movie = new Movie
+            {
+                Name = name,
+                YearOfRelease = year,
+                Plot = plot,
+                Actors = selectedActors,
+                Producer = selectedProducer
+            };
+            _movieRepo.AddMovie(movie);
+        }
+
+        // Deleting a movie 
+        public void DeleteMovie(string movieName)
         {
             try
             {
-                Console.Write("Enter Movie Name: ");
-                var name = Console.ReadLine();
-                if (string.IsNullOrEmpty(name))
-                    throw new ValidationException("Movie name cannot be empty.");
-
-                Console.Write("Enter Year of Release: ");
-                if (!int.TryParse(Console.ReadLine(), out var year) || year < 1896 || year > DateTime.Now.Year)
-                    throw new ValidationException("Invalid year entered. The movie year must be between 1896 and the current year.");
-
-                Console.Write("Enter Plot: ");
-                var plot = Console.ReadLine();
-                if (string.IsNullOrEmpty(plot))
-                    throw new ValidationException("Plot cannot be empty.");
-
-                var actors = _actorRepo.GetAllActors();
-                if (actors.Count == 0)
-                    throw new ValidationException("No actors available. Please add actors first.");
-
-                Console.WriteLine("Select Actors (comma-separated indices):");
-                for (var i = 0; i < actors.Count; i++)
-                    Console.WriteLine($"{i + 1}. {actors[i].Name}");
-
-                var actorIndices = Console.ReadLine()?.Split(',').Select(int.Parse).ToList();
-                if (actorIndices == null || actorIndices.Any(index => index < 1 || index > actors.Count))
-                    throw new ValidationException("Invalid actor selection.");
-
-                var selectedActors = actorIndices.Select(index => actors[index - 1]).ToList();
-
-                var producers = _producerRepo.GetAllProducers();
-                if (producers.Count == 0)
-                    throw new ValidationException("No producers available. Please add producers first.");
-
-                Console.WriteLine("Select a Producer (index):");
-                for (var i = 0; i < producers.Count; i++)
-                    Console.WriteLine($"{i + 1}. {producers[i].Name}");
-
-                if (!int.TryParse(Console.ReadLine(), out var producerIndex) || producerIndex < 1 || producerIndex > producers.Count)
-                    throw new ValidationException("Invalid producer selection.");
-
-                var selectedProducer = producers[producerIndex - 1];
-
-                var movie = new Movie { Name = name, YearOfRelease = year, Plot = plot, Actors = selectedActors, Producer = selectedProducer };
-
-                _movieRepo.AddMovie(movie);
-                Console.WriteLine("Movie added successfully!");
-            }
-            catch (ValidationException ve)
-            {
-                Console.WriteLine($"Validation Error: {ve.Message}");
+                _movieRepo.DeleteMovie(movieName);
+                Console.WriteLine($"Movie '{movieName}' deleted successfully.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error adding movie: {ex.Message}");
+                Console.WriteLine($"Error deleting movie: {ex.Message}");
+            }
+        }
+
+        // Add producer
+        public void AddProducer(string producerName)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(producerName))
+                {
+                    Console.WriteLine("Producer name cannot be empty.");
+                    return;
+                }
+
+                var producer = new Producer { Name = producerName };
+                _producerRepo.AddProducer(producer);
+
+                Console.WriteLine($"Producer '{producerName}' added successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error adding producer: {ex.Message}");
+            }
+        }
+
+        // Get all actors
+        public List<Actor> GetAllActors()
+        {
+            try
+            {
+                var actors = _actorRepo.GetAllActors();
+                if (actors.Count == 0)
+                {
+                    Console.WriteLine("No actors found.");
+                }
+                return actors;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching actors: {ex.Message}");
+                return new List<Actor>();
             }
         }
 
