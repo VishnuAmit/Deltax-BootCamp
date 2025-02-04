@@ -13,6 +13,11 @@ class Program
         IActorRepository actorRepo = new ActorRepository();
         IProducerRepository producerRepo = new ProducerRepository();
         var movieService = new MovieService(movieRepo, actorRepo, producerRepo);
+        var actorService = new ActorService(actorRepo);
+        var producerService = new ProducerService(producerRepo);
+
+
+
 
         while (true)
         {
@@ -57,58 +62,47 @@ class Program
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.WriteLine("********* ADD A NEW MOVIE *********");
                     Console.ResetColor();
+
                     try
                     {
                         Console.Write("Enter Movie Name: ");
                         string name = Console.ReadLine() ?? string.Empty;
+
                         Console.Write("Enter Year of Release: ");
-                        string yearInput = Console.ReadLine() ?? string.Empty;
-                        if (!int.TryParse(yearInput, out int year))
-                        {
+                        if (!int.TryParse(Console.ReadLine() ?? string.Empty, out int year))
                             throw new ValidationException("Invalid year format.");
-                        }
+
                         Console.Write("Enter Plot: ");
                         string plot = Console.ReadLine() ?? string.Empty;
-                        var actors = actorRepo.GetAllActors();
+
+                        var actors = actorService.GetAllActors(); 
                         if (!actors.Any())
-                        {
                             throw new ValidationException("No actors available. Please add actors first.");
-                        }
+
                         Console.WriteLine("\nAvailable Actors:");
                         for (int i = 0; i < actors.Count; i++)
-                        {
                             Console.WriteLine($"{i + 1}. {actors[i].Name}");
-                        }
-                        Console.WriteLine("\nSelect Actors (comma-separated indices):");
-                        string actorInput = Console.ReadLine() ?? string.Empty;
-                        var selectedActorIndices = actorInput.Split(',')
+
+                        Console.Write("\nSelect Actors (comma-separated indices): ");
+                        var selectedActorIndices = (Console.ReadLine() ?? string.Empty)
+                            .Split(',')
                             .Select(x => int.TryParse(x.Trim(), out int index) ? index : 0)
                             .Where(x => x > 0 && x <= actors.Count)
                             .ToList();
 
-                        var producers = producerRepo.GetAllProducers();
+                        var producers = producerService.GetAllProducers().ToList();
                         if (!producers.Any())
-                        {
                             throw new ValidationException("No producers available. Please add producers first.");
-                        }
+
                         Console.WriteLine("\nAvailable Producers:");
                         for (int i = 0; i < producers.Count; i++)
-                        {
                             Console.WriteLine($"{i + 1}. {producers[i].Name}");
-                        }
-                        Console.WriteLine("\nSelect Producer (index):");
-                        string producerInput = Console.ReadLine() ?? string.Empty;
-                        if (!int.TryParse(producerInput, out int producerIndex))
-                        {
+
+                        Console.Write("\nSelect Producer (index): ");
+                        if (!int.TryParse(Console.ReadLine() ?? string.Empty, out int producerIndex))
                             throw new ValidationException("Invalid producer selection.");
-                        }
-                        movieService.AddMovie(
-                            name,
-                            year,
-                            plot,
-                            selectedActorIndices,
-                            producerIndex
-                        );
+
+                        movieService.AddMovie(name, year, plot, selectedActorIndices, producerIndex);
                         Console.WriteLine("\nMovie added successfully!");
                     }
                     catch (ValidationException ex)
@@ -123,18 +117,20 @@ class Program
                         Console.WriteLine($"\nAn unexpected error occurred: {ex.Message}");
                         Console.ResetColor();
                     }
+
                     PauseAndReturnToMenu();
                     break;
+
 
                 case "3":
                     ShowLinqOptions(movieService);
                     break;
 
                 case "4":
+                    Console.Clear();
                     Console.WriteLine("********* LIST OF ACTORS *********");
 
-                    var actorList = movieService.GetAllActors(); 
-
+                    var actorList = actorService.GetAllActors();
                     if (actorList.Any())
                     {
                         for (int i = 0; i < actorList.Count; i++)
@@ -146,20 +142,63 @@ class Program
                     {
                         Console.WriteLine("No actors found.");
                     }
+
+                    Console.Write("\nDo you want to add a new actor? (yes/no): ");
+                    string response = Console.ReadLine()?.Trim().ToLower();
+                    if (response == "yes")
+                    {
+                        Console.Write("Enter Actor Name: ");
+                        string actorName = Console.ReadLine() ?? string.Empty;
+
+                        try
+                        {
+                            actorService.AddActor(actorName);
+                        }
+                        catch (ValidationException ex)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine($"Error: {ex.Message}");
+                            Console.ResetColor();
+                        }
+                    }
                     break;
 
-                case "5":
-                    Console.WriteLine("Enter the name of the producer to add:");
-                    var producerName = Console.ReadLine();
 
-                    if (string.IsNullOrEmpty(producerName))
+                case "5":
+                    Console.Clear();
+                    Console.WriteLine("********* LIST OF PRODUCERS *********");
+
+                    var producerList = producerService.GetAllProducers();
+                    if (producerList.Any())
                     {
-                        Console.WriteLine("Producer name cannot be empty.");
-                        return;
+                        for (int i = 0; i < producerList.Count; i++)
+                        {
+                            Console.WriteLine($"{i + 1}. {producerList[i].Name}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No producers found.");
                     }
 
-                    movieService.AddProducer(producerName);
-                    PauseAndReturnToMenu();
+                    Console.Write("\nDo you want to add a new producer? (yes/no): ");
+                    string producerResponse = Console.ReadLine()?.Trim().ToLower();
+                    if (producerResponse == "yes")
+                    {
+                        Console.Write("Enter Producer Name: ");
+                        string producerName = Console.ReadLine() ?? string.Empty;
+
+                        try
+                        {
+                            producerService.AddProducer(producerName);
+                        }
+                        catch (ValidationException ex)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine($"Error: {ex.Message}");
+                            Console.ResetColor();
+                        }
+                    }
                     break;
 
                 case "6":

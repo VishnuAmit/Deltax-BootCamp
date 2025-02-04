@@ -93,48 +93,6 @@ namespace IMDBApp.Services
             }
         }
 
-        // Add producer
-        public void AddProducer(string producerName)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(producerName))
-                {
-                    Console.WriteLine("Producer name cannot be empty.");
-                    return;
-                }
-
-                var producer = new Producer { Name = producerName };
-                _producerRepo.AddProducer(producer);
-
-                Console.WriteLine($"Producer '{producerName}' added successfully.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error adding producer: {ex.Message}");
-            }
-        }
-
-        // Get all actors
-        public List<Actor> GetAllActors()
-        {
-            try
-            {
-                var actors = _actorRepo.GetAllActors();
-                if (actors.Count == 0)
-                {
-                    Console.WriteLine("No actors found.");
-                }
-                return actors;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error fetching actors: {ex.Message}");
-                return new List<Actor>();
-            }
-        }
-
-
         // LINQ queries qns 1 to 5
         public void GetMoviesReleasedAfter2010()
         {
