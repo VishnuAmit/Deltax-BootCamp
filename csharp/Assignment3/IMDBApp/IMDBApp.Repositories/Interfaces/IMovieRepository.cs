@@ -6,5 +6,6 @@ namespace IMDBApp.Domain.Interfaces
     {
         List<Movie> GetAllMovies();
         void AddMovie(Movie movie);
+        void DeleteMovie(string movieName); 
     }
 }
