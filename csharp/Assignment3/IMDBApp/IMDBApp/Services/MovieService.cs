@@ -62,8 +62,10 @@ namespace IMDBApp.Services
                 throw new ValidationException("Plot cannot be empty.");
             var actors = _actorRepo.GetAllActors();
             if (!actorIndices.Any() || actorIndices.Any(index => index < 1 || index > actors.Count))
+            if (!actorIndices.Any() || actorIndices.Any(index => index < 1 || index > actors.Count))
                 throw new ValidationException("Invalid actor selection.");
             var producers = _producerRepo.GetAllProducers();
+            if (producerIndex < 1 || producerIndex > producers.Count)
             if (producerIndex < 1 || producerIndex > producers.Count)
                 throw new ValidationException("Invalid producer selection.");
             var selectedActors = actorIndices.Select(index => actors[index - 1]).ToList();

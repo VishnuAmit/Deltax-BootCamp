@@ -1,4 +1,4 @@
-﻿using IMDBApp.Domain.Interfaces;
+using IMDBApp.Domain.Interfaces;
 using IMDBApp.Repositories;
 using IMDBApp.Services;
 using IMDBApp.Domain.Models;
