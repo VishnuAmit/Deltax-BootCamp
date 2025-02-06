@@ -1,4 +1,5 @@
 ﻿
+using IMDBApp.Domain.Exceptions;
 using IMDBApp.Domain.Interfaces;
 using IMDBApp.Repositories;
 using IMDBApp.Services;
@@ -53,7 +54,84 @@ class Program
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.WriteLine("********* ADD A NEW MOVIE *********");
                     Console.ResetColor();
-                    movieService.AddMovie();
+
+                    try
+                    {
+                        Console.Write("Enter Movie Name: ");
+                        string name = Console.ReadLine() ?? string.Empty;
+
+                        Console.Write("Enter Year of Release: ");
+                        string yearInput = Console.ReadLine() ?? string.Empty;
+                        if (!int.TryParse(yearInput, out int year))
+                        {
+                            throw new ValidationException("Invalid year format.");
+                        }
+
+                        Console.Write("Enter Plot: ");
+                        string plot = Console.ReadLine() ?? string.Empty;
+
+
+                        var actors = actorRepo.GetAllActors();
+                        if (!actors.Any())
+                        {
+                            throw new ValidationException("No actors available. Please add actors first.");
+                        }
+
+                        Console.WriteLine("\nAvailable Actors:");
+                        for (int i = 0; i < actors.Count; i++)
+                        {
+                            Console.WriteLine($"{i + 1}. {actors[i].Name}");
+                        }
+
+                        Console.WriteLine("\nSelect Actors (comma-separated indices):");
+                        string actorInput = Console.ReadLine() ?? string.Empty;
+                        var selectedActorIndices = actorInput.Split(',')
+                            .Select(x => int.TryParse(x.Trim(), out int index) ? index : 0)
+                            .Where(x => x > 0 && x <= actors.Count)
+                            .ToList();
+
+  
+                        var producers = producerRepo.GetAllProducers();
+                        if (!producers.Any())
+                        {
+                            throw new ValidationException("No producers available. Please add producers first.");
+                        }
+
+                        Console.WriteLine("\nAvailable Producers:");
+                        for (int i = 0; i < producers.Count; i++)
+                        {
+                            Console.WriteLine($"{i + 1}. {producers[i].Name}");
+                        }
+                        Console.WriteLine("\nSelect Producer (index):");
+                        string producerInput = Console.ReadLine() ?? string.Empty;
+                        if (!int.TryParse(producerInput, out int producerIndex))
+                        {
+                            throw new ValidationException("Invalid producer selection.");
+                        }
+
+                        movieService.AddMovie(
+                            name,
+                            year,
+                            plot,
+                            selectedActorIndices,
+                            producerIndex
+                        );
+
+                        Console.WriteLine("\nMovie added successfully!");
+                    }
+                    catch (ValidationException ex)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"\nError: {ex.Message}");
+                        Console.ResetColor();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"\nAn unexpected error occurred: {ex.Message}");
+                        Console.ResetColor();
+                    }
+
                     PauseAndReturnToMenu();
                     break;
 
